@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Online Voting System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/voter/index.css') }}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="header">
+        <h1>Online Voting System</h1>
+        <p>Cast your vote securely from anywhere</p>
+    </div>
+    
+    <div class="container">
+        <div class="card">
+            <h2 class="heading">Welcome to the Online Voting System</h2>
+            <p class="sub-heading">This platform allows you to cast your vote securely using OTP verification.</p>
+            
+            <div class="actions">
+                <a href="{{ url_for('login') }}" class="btn primary-btn">
+                    <i class="fas fa-sign-in-alt"></i> Voter Login
+                </a>
+                <a href="{{ url_for('admin_login') }}" class="btn secondary-btn">
+                    <i class="fas fa-user-shield"></i> Admin Login
+                </a>
+            </div>
+            
+            <div class="features">
+                <div class="feature">
+                    <i class="fas fa-lock"></i>
+                    <h3>Secure Authentication</h3>
+                    <p>Two-factor authentication with OTP verification for enhanced security.</p>
+                </div>
+                <div class="feature">
+                    <i class="fas fa-vote-yea"></i>
+                    <h3>Easy Voting</h3>
+                    <p>Simple and intuitive interface for casting your vote.</p>
+                </div>
+                <div class="feature">
+                    <i class="fas fa-chart-pie"></i>
+                    <h3>Real-time Results</h3>
+                    <p>Election results are calculated in real-time for administrators.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="footer">
+        <p>&copy; 2025 Online Voting System. All rights reserved.</p>
+    </div>
+</body>
+</html>

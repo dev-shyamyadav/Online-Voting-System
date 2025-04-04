@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vote Successful - Online Voting System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/voter/vote_success.css') }}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="header">
+        <h1>Vote Successful</h1>
+    </div>
+    
+    <div class="container">
+        <div class="card success-card">
+            <div class="success-icon">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            
+            <h2>Thank You for Voting!</h2>
+            <p>Your vote has been recorded successfully.</p>
+            <p>You have been automatically logged out for security purposes.</p>
+            
+            <div class="actions">
+                <a href="{{ url_for('home') }}" class="btn primary-btn">
+                    <i class="fas fa-home"></i> Return to Home
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="footer">
+        <p>&copy; 2025 Online Voting System. All rights reserved.</p>
+    </div>
+</body>
+</html>

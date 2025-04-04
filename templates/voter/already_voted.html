@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Already Voted - Online Voting System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/voter/already_voted.css') }}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="header">
+        <h1>Already Voted</h1>
+    </div>
+    
+    <div class="container">
+        <div class="card warning-card">
+            <div class="warning-icon">
+                <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            
+            <h2>You Have Already Voted</h2>
+            <p class="p-1">Our records show that you have already cast your vote.</p>
+            <p class="p-2">Each voter is allowed to vote only once.</p>
+            
+            <div class="actions">
+                <a href="{{ url_for('logout') }}" class="btn primary-btn">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="footer">
+        <p>&copy; 2025 Online Voting System. All rights reserved.</p>
+    </div>
+</body>
+</html>

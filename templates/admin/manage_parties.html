@@ -1,0 +1,127 @@
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Parties - Online Voting System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin/manage_parties.css') }}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+</head>
+
+<body>
+    <div class="admin-sidebar">
+        <div class="admin-logo">
+            <i class="fas fa-vote-yea"></i>
+            <span>Admin Panel</span>
+        </div>
+
+        <nav class="admin-nav">
+            <a href="{{ url_for('admin_dashboard') }}">
+                <i class="fas fa-tachometer-alt"></i> Dashboard
+            </a>
+            <a href="{{ url_for('register_voter') }}">
+                <i class="fas fa-user-plus"></i> Register Voter
+            </a>
+            <a href="{{ url_for('manage_parties') }}" class="active">
+                <i class="fas fa-flag"></i> Manage Parties
+            </a>
+            <a href="{{ url_for('view_results') }}">
+                <i class="fas fa-chart-bar"></i> View Results
+            </a>
+            <a href="{{ url_for('admin_logout') }}">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </a>
+        </nav>
+    </div>
+
+    <div class="admin-content">
+        <div class="admin-header">
+            <h1>Manage Parties</h1>
+        </div>
+
+        <div class="card">
+            <h2>Add New Party</h2>
+
+            <div class="msg">{{ msg }}</div>
+
+            <form action="{{ url_for('manage_parties') }}" method="post" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="party_name">Party Name</label>
+                    <input type="text" id="party_name" name="party_name" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="party_symbol">Party Symbol (Image)</label>
+                    <input type="file" id="party_symbol" name="party_symbol" accept="image/*" required>
+                </div>
+
+                <button type="submit" class="btn primary-btn">
+                    <i class="fas fa-plus-circle"></i> Add Party
+                </button>
+            </form>
+        </div>
+
+        <div class="card">
+            <h2>Existing parties</h2>
+
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Party Name</th>
+                            <th>Party Symbol</th>
+                            <th>Votes</th>
+                        </tr>
+                    </thead>
+                    <tbody id="partiesTable">
+                        <tr>
+                            <td colspan="4">Loading Parties Details...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <script>
+            // Fetch parties data
+            fetch('/admin/api/parties')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok ' + response.statusText);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    const tableBody = document.getElementById('partiesTable');
+                    tableBody.innerHTML = '';
+
+                    // Check if the data contains parties
+                    if (data.parties.length === 0) {
+                        tableBody.innerHTML = '<tr><td colspan="6">No parties registered yet.</td></tr>';
+                        return;
+                    }
+
+                    data.parties.forEach(party => {
+                        const row = document.createElement('tr');
+
+                        row.innerHTML = `
+                    <td>${party.party_id}</td>
+                    <td>${party.party_name}</td>
+                    <td><img src="../../${party.party_symbol}" alt="${party.party_name}" width="50" height="50"></td>
+                    <td>${party.votes}</td>
+                `;
+
+                        tableBody.appendChild(row);
+                    });
+
+                })
+                .catch(error => {
+                    console.error('Error fetching parties:', error);
+                    document.getElementById('partiesTable').innerHTML =
+                        '<tr><td colspan="5">Error loading parties. Please try again.</td></tr>';
+                });
+        </script>
+</body>
+
+</html>

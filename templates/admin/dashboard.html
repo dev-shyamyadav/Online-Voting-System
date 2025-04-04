@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Online Voting System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin/dashboard.css') }}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="admin-sidebar">
+        <div class="admin-logo">
+            <i class="fas fa-vote-yea"></i>
+            <span>Admin Panel</span>
+        </div>
+        
+        <nav class="admin-nav">
+            <a href="{{ url_for('admin_dashboard') }}" class="active">
+                <i class="fas fa-tachometer-alt"></i> Dashboard
+            </a>
+            <a href="{{ url_for('register_voter') }}">
+                <i class="fas fa-user-plus"></i> Register Voter
+            </a>
+            <a href="{{ url_for('manage_parties') }}">
+                <i class="fas fa-flag"></i> Manage Parties
+            </a>
+            <a href="{{ url_for('view_results') }}">
+                <i class="fas fa-chart-bar"></i> View Results
+            </a>
+            <a href="{{ url_for('admin_logout') }}">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </a>
+        </nav>
+    </div>
+    
+    <div class="admin-content">
+        <div class="admin-header">
+            <h1>Admin Dashboard</h1>
+        </div>
+        
+        <div class="admin-stats">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="stat-info">
+                    <h3>Total Voters</h3>
+                    <p id="totalVoters">Loading...</p>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-vote-yea"></i>
+                </div>
+                <div class="stat-info">
+                    <h3>Votes Cast</h3>
+                    <p id="votesCast">Loading...</p>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-percentage"></i>
+                </div>
+                <div class="stat-info">
+                    <h3>Turnout</h3>
+                    <p id="turnout">Loading...</p>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-flag"></i>
+                </div>
+                <div class="stat-info">
+                    <h3>Parties</h3>
+                    <p id="totalParties">Loading...</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="admin-quick-links">
+            <h2>Quick Actions</h2>
+            <div class="quick-links-grid">
+                <a href="{{ url_for('register_voter') }}" class="quick-link">
+                    <i class="fas fa-user-plus"></i>
+                    <span>Add New Voter</span>
+                </a>
+                <a href="{{ url_for('manage_parties') }}" class="quick-link">
+                    <i class="fas fa-plus-circle"></i>
+                    <span>Add New Party</span>
+                </a>
+                <a href="{{ url_for('view_results') }}" class="quick-link">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>View Results</span>
+                </a>
+            </div>
+        </div>
+        
+        <div class="admin-charts">
+            <div class="chart-container">
+                <h3>Voter Turnout</h3>
+                <canvas id="turnoutChart"></canvas>
+            </div>
+            <div class="chart-container">
+                <h3>Party Performance</h3>
+                <canvas id="partiesChart"></canvas>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
+    <script>
+        // Fetch data using AJAX
+        fetch('/admin/api/dashboard-data')
+            .then(response => response.json())
+            .then(data => {
+                // Update statistics
+                document.getElementById('totalVoters').textContent = data.totalVoters;
+                document.getElementById('votesCast').textContent = data.votesCast;
+                document.getElementById('turnout').textContent = data.turnoutPercentage + '%';
+                document.getElementById('totalParties').textContent = data.totalParties - 1;
+                
+                // Create turnout chart
+                const turnoutCtx = document.getElementById('turnoutChart').getContext('2d');
+                new Chart(turnoutCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Voted', 'Not Voted'],
+                        datasets: [{
+                            data: [data.votesCast, data.totalVoters - data.votesCast],
+                            backgroundColor: ['#4CAF50', '#f0f0f0']
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false
+                    }
+                });
+                
+                // Create parties chart
+                const partiesCtx = document.getElementById('partiesChart').getContext('2d');
+                new Chart(partiesCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: data.parties.map(p => p.name),
+                        datasets: [{
+                            label: 'Votes',
+                            data: data.parties.map(p => p.votes),
+                            backgroundColor: '#3498db'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false
+                    }
+                });
+            })
+            .catch(error => {
+                console.error('Error fetching dashboard data:', error);
+            });
+    </script>
+</body>
+</html>

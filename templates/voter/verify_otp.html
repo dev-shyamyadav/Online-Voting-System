@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verify OTP - Online Voting System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/voter/verify_otp.css') }}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="header">
+        <h1>OTP Verification</h1>
+    </div>
+    
+    <div class="container">
+        <div class="card">
+            <h2>Enter OTP</h2>
+            {% set masked_email = email[:5] + '*' * (email|length - 5) %}
+            <p>A one-time password has been sent to your registered email address: <span>{{ masked_email }}</span></p>
+            
+
+            
+            <div class="msg">{{ msg }}</div>
+            
+            <form action="{{ url_for('verify_otp') }}" method="post">
+                <div class="form-group">
+                    <label for="otp">OTP Code</label>
+                    <input type="text" id="otp" name="otp" required>
+                </div>
+                
+                <button type="submit" class="btn primary-btn">
+                    <i class="fas fa-check-circle"></i> Verify
+                </button>
+            </form>
+            
+            <div class="timer">
+                <p>OTP expires in <span id="countdown">05:00</span></p>
+            </div>
+            
+            <div class="login-footer">
+                <a href="{{ url_for('login') }}">Resend OTP</a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="footer">
+        <p>&copy; 2025 Online Voting System. All rights reserved.</p>
+    </div>
+    
+    <script>
+        // Countdown timer for OTP expiration
+        let timeLeft = 5 * 60; // 5 minutes in seconds
+        const countdownEl = document.getElementById('countdown');
+        
+        const countdownTimer = setInterval(function() {
+            const minutes = Math.floor(timeLeft / 60);
+            let seconds = timeLeft % 60;
+            seconds = seconds < 10 ? '0' + seconds : seconds;
+            
+            countdownEl.innerHTML = `${minutes}:${seconds}`;
+            timeLeft--;
+            
+            if (timeLeft < 0) {
+                clearInterval(countdownTimer);
+                countdownEl.innerHTML = "Expired";
+                alert("OTP has expired. Please request a new one.");
+                window.location.href = "{{ url_for('login') }}";
+            }
+        }, 1000);
+    </script>
+</body>
+</html>

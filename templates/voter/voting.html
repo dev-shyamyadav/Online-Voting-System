@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cast Your Vote - Online Voting System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/voter/voting.css') }}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+</head>
+
+<body>
+    <div class="header">
+        <h1>Cast Your Vote</h1>
+    </div>
+
+    <div class="container">
+        <div class="card">
+            <h2>Select a Party to Vote</h2>
+            <p>Click on a party to cast your vote. This action cannot be undone.</p>
+
+            <form action="{{ url_for('voting_page') }}" method="post" id="votingForm">
+                <div class="parties-grid" id="parties-grid">
+                </div>
+
+                <div class="confirmation-box" id="confirmationBox" style="display: none;">
+                    <h3>Confirm Your Vote</h3>
+                    <p>You are about to vote for: <span id="selectedParty"></span></p>
+                    <p>This action cannot be undone. Are you sure?</p>
+
+                    <div class="confirmation-actions">
+                        <button type="button" class="btn secondary-btn" id="cancelBtn">
+                            <i class="fas fa-times"></i> Cancel
+                        </button>
+                        <button type="submit" class="btn primary-btn">
+                            <i class="fas fa-check"></i> Confirm Vote
+                        </button>
+                    </div>
+                </div>
+
+                <button type="button" class="btn primary-btn" id="submitBtn">
+                    <i class="fas fa-vote-yea"></i> Submit Vote
+                </button>
+            </form>
+
+            <div class="logout-section">
+                <a href="{{ url_for('logout') }}" class="btn secondary-btn">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>&copy; 2025 Online Voting System. All rights reserved.</p>
+    </div>
+
+    <script>
+        document.getElementById('submitBtn').addEventListener('click', function () {
+            const form = document.getElementById('votingForm');
+            const selectedParty = document.querySelector('input[name="party"]:checked');
+
+            if (!selectedParty) {
+                alert('Please select a party to vote.');
+                return;
+            }
+
+            const partyName = document.querySelector('label[for="' + selectedParty.value + '"] .party-name')?.textContent;
+            document.getElementById('selectedParty').textContent = partyName;
+
+            document.getElementById('confirmationBox').style.display = 'block';
+            document.getElementById('submitBtn').style.display = 'none';
+        });
+
+        document.getElementById('cancelBtn').addEventListener('click', function () {
+            document.getElementById('confirmationBox').style.display = 'none';
+            document.getElementById('submitBtn').style.display = 'block';
+        });
+
+        fetch('/admin/api/parties')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok ' + response.statusText);
+                }
+                return response.json();
+            })
+            .then(data => {
+                const partyGrid = document.getElementById('parties-grid');
+                partyGrid.innerHTML = '';
+
+                // Check if the data contains parties
+                if (data.parties.length === 0) {
+                    partyGrid.innerHTML = '<h1>No parties registered yet.</h1>';
+                    return;
+                }
+
+                data.parties.forEach(party => {
+                    const card = document.createElement('div');
+                    card.className = 'party-card';
+                    card.innerHTML = `
+                        <input type="radio" id="${party.party_id}" name="party" value="${party.party_id}" required>
+                        <label for="${party.party_id}">
+                            <div class="party-symbol">
+                                <img src="../../${party.party_symbol}" alt="${party.party_name}" width="50" height="50">
+                            </div>
+                            <div class="party-name">${party.party_name}</div>
+                        </label>
+                    `;
+
+                    partyGrid.appendChild(card);
+                });
+
+            })
+            .catch(error => {
+                console.error('Error fetching parties:', error);
+                document.getElementById('parties-grid').innerHTML =
+                    '<h1>Error loading parties. Please try again.</h1>';
+            });
+    </script>
+</body>
+
+</html>

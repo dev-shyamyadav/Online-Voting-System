@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Election Results - Online Voting System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin/results.css') }}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+</head>
+
+<body>
+    <div class="admin-sidebar">
+        <div class="admin-logo">
+            <i class="fas fa-vote-yea"></i>
+            <span>Admin Panel</span>
+        </div>
+
+        <nav class="admin-nav">
+            <a href="{{ url_for('admin_dashboard') }}">
+                <i class="fas fa-tachometer-alt"></i> Dashboard
+            </a>
+            <a href="{{ url_for('register_voter') }}">
+                <i class="fas fa-user-plus"></i> Register Voter
+            </a>
+            <a href="{{ url_for('manage_parties') }}">
+                <i class="fas fa-flag"></i> Manage Parties
+            </a>
+            <a href="{{ url_for('view_results') }}" class="active">
+                <i class="fas fa-chart-bar"></i> View Results
+            </a>
+            <a href="{{ url_for('admin_logout') }}">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </a>
+        </nav>
+    </div>
+
+    <div class="admin-content">
+        <div class="admin-header">
+            <h1>Election Results</h1>
+        </div>
+
+        <div class="results-summary">
+            <div class="summary-card">
+                <div class="summary-title">Total Voters</div>
+                <div class="summary-value">{{ total_voters }}</div>
+            </div>
+
+            <div class="summary-card">
+                <div class="summary-title">Votes Cast</div>
+                <div class="summary-value">{{ votes_cast }}</div>
+            </div>
+
+            <div class="summary-card">
+                <div class="summary-title">Voter Turnout</div>
+                <div class="summary-value">
+                    {% if total_voters > 0 %}
+                    {{ (votes_cast / total_voters * 100) | round(2) }}%
+                    {% else %}
+                    0%
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Results by Party</h2>
+
+            <div class="results-container">
+                <div class="results-chart">
+                    <canvas id="resultsChart"></canvas>
+                </div>
+
+                <div class="results-table">
+                    <table class="data-table" id="resultsTable">
+                        <thead>
+                            <tr>
+                                <th>Rank</th>
+                                <th>Party</th>
+                                <th>Votes</th>
+                                <th>Percentage</th>
+                            </tr>
+                        </thead>
+                        <tbody id="resultsTableBody">
+                            <!-- Results will be inserted here dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="export-options">
+            <button class="btn primary-btn" id="printResults">
+                <i class="fas fa-print"></i> Print Results
+            </button>
+            <button class="btn secondary-btn" id="exportPDF">
+                <i class="fas fa-file-pdf"></i> Export as PDF
+            </button>
+            <button class="btn secondary-btn" id="exportCSV">
+                <i class="fas fa-file-csv"></i> Export as CSV
+            </button>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
+    <script>
+
+        let partyNames = [];
+        let partyVotes = [];
+        let partySymbols = [];
+        let votesCast = [];
+
+        fetch('/admin/api/results')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok ' + response.statusText);
+                }
+                return response.json();
+            })
+            .then(data => {
+                const resultsTable = document.getElementById('resultsTableBody');
+                resultsTable.innerHTML = '';
+
+                if (data.results.length === 0) {
+                    resultsTable.innerHTML = '<tr><td colspan="4">No results available.</td></tr>';
+                    return;
+                }
+
+                let totalVotes = data.votes_cast || 0; // Avoid division by zero
+
+                data.results.forEach((result, index) => {
+                    const row = document.createElement('tr');
+
+                    if (index === 0) {
+                        row.classList.add('winner');
+                    }
+
+                    row.innerHTML = `
+                <td>${index + 1}</td>
+                <td>
+                    <div class="party-info">
+                        <span class="party-symbol">
+                            <img src="../../${result.party_symbol}" alt="${result.party_name}" width="30" height="30">
+                        </span>
+                        <span>${result.party_name}</span>
+                    </div>
+                </td>
+                <td>${result.votes}</td>
+                <td>${totalVotes > 0 ? ((result.votes / totalVotes) * 100).toFixed(2) : 0}%</td>
+            `;
+
+                    resultsTable.appendChild(row);
+
+                    // Push data for the chart
+                    partyNames.push(result.party_name);
+                    partyVotes.push(result.votes);
+                    partySymbols.push(result.party_symbol);
+                });
+
+                // Draw the chart AFTER data is ready
+                drawChart(partyNames, partyVotes);
+            })
+            .catch(error => {
+                console.error('Error fetching results:', error);
+                document.getElementById('resultsTableBody').innerHTML =
+                    '<tr><td colspan="4">Error loading results. Please try again.</td></tr>';
+            });
+
+        // Function to create the chart
+        function drawChart(partyNames, partyVotes) {
+            var ctx = document.getElementById('resultsChart').getContext('2d');
+
+            new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: partyNames,
+                    datasets: [{
+                        data: partyVotes,
+                        backgroundColor: generateColors(partyNames.length) // Make sure generateColors() exists
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'right'
+                        }
+                    }
+                }
+            });
+        }
+
+
+        fetch('/admin/api/results')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok ' + response.statusText);
+                }
+                return response.json();
+            })
+            .then(data => {
+                const resultsTable = document.getElementById('resultsTableBody'); // Ensure this table exists in HTML
+                resultsTable.innerHTML = '';
+
+                if (data.results.length === 0) {
+                    resultsTable.innerHTML = '<tr><td colspan="4">No results available.</td></tr>';
+                    return;
+                }
+
+                let totalVotes = data.votes_cast || 0; // Total votes cast
+                let winnerId = data.results[0]?.party_id; // Assuming first party has highest votes
+
+                data.results.forEach((result, index) => {
+                    const row = document.createElement('tr');
+
+                    // Add class 'winner' to the first row (highest votes)
+                    if (index === 0) {
+                        row.classList.add('winner');
+                    }
+
+                    row.innerHTML = `
+                    <td>${index + 1}</td>
+                    <td>
+                        <div class="party-info">
+                            <div class="party-symbol">
+                                <img src="../../${result.party_symbol}" alt="${result.party_name}" width="30" height="30">
+                            </div>
+                            <div>${result.party_name}</div>
+                        </div>
+                    </td>
+                    <td>${result.votes}</td>
+                    <td>${totalVotes > 0 ? ((result.votes / totalVotes) * 100).toFixed(2) : 0}%</td>
+                `;
+
+                    resultsTable.appendChild(row);
+                });
+            })
+            .catch(error => {
+                console.error('Error fetching results:', error);
+                document.getElementById('resultsTableBody').innerHTML =
+                    '<tr><td colspan="4">Error loading results. Please try again.</td></tr>';
+            });
+
+
+        // Generate colors for chart
+        function generateColors(count) {
+            var colors = [
+                '#4CAF50', '#2196F3', '#F44336', '#FF9800', '#9C27B0',
+                '#3F51B5', '#00BCD4', '#009688', '#FFEB3B', '#795548'
+            ];
+
+            // If we need more colors than in our predefined list,
+            // generate random colors
+            if (count > colors.length) {
+                for (var i = colors.length; i < count; i++) {
+                    colors.push(getRandomColor());
+                }
+            }
+
+            return colors.slice(0, count);
+        }
+
+        function getRandomColor() {
+            var letters = '0123456789ABCDEF';
+            var color = '#';
+            for (var i = 0; i < 6; i++) {
+                color += letters[Math.floor(Math.random() * 16)];
+            }
+            return color;
+        }
+
+        // Print results
+        document.getElementById('printResults').addEventListener('click', function () {
+            window.print();
+        });
+
+        // Export as PDF
+        document.getElementById('exportPDF').addEventListener('click', function () {
+            alert('This feature would generate a PDF file with the results.');
+        });
+
+        // Export as CSV
+        document.getElementById('exportCSV').addEventListener('click', function () {
+            var headers = ['Rank', 'Party', 'Votes', 'Percentage'];
+            var csvContent = headers.join(',') + '\n';
+
+            // Generate CSV content from the table data
+            for (var i = 0; i < partyNames.length; i++) {
+                var percentage = votesCast > 0 ?
+                    ((partyVotes[i] / votesCast * 100).toFixed(2)) : 0;
+
+                csvContent += (i + 1) + ',"' + partyNames[i] + '",' + partyVotes[i] + ',' + percentage + '%\n';
+            }
+
+            var blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            var link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.setAttribute('download', 'election_results.csv');
+            link.click();
+        });
+    </script>
+</body>
+
+</html>
