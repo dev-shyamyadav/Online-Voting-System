@@ -1,0 +1,126 @@
+/* General Styles */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+}
+
+.header {
+    background-color: #007bff; /* Blue header */
+    color: white;
+    text-align: center;
+    padding: 20px 0;
+}
+
+.container {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 20px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.card {
+    padding: 20px;
+}
+
+h2 {
+    font-size: 20px;
+    margin-bottom: 10px;
+}
+
+.parties-grid {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.party-card {
+    display: flex;
+    gap: 2rem;
+    background: #f9f9f9;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 10px;
+    margin: 5px;
+    flex: 1 1 calc(30% - 10px); /* Responsive card size */
+    text-align: center;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.party-card:hover {
+    background: #e9ecef; /* Light gray on hover */
+}
+
+.party-card label{
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    align-items: center;
+}
+
+.party-symbol img {
+    width: 50px;
+    height: 50px;
+}
+
+.confirmation-box {
+    background: #f9f9f9;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 20px;
+    margin-top: 20px;
+}
+
+.confirmation-actions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+}
+
+.btn {
+    font-weight: bold;
+    display: inline-block;
+    padding: 10px 25px;
+    margin: 5px;
+    border-radius: 5px;
+    text-decoration: none;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+.primary-btn {
+    background-color: #007bff; /* Blue button */
+}
+
+.primary-btn:hover {
+    background-color: #0056b3; /* Darker blue on hover */
+}
+
+.secondary-btn {
+    background-color: #6c757d; /* Gray button */
+}
+
+.secondary-btn:hover {
+    background-color: #5a6268; /* Darker gray on hover */
+}
+
+.logout-section {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.footer {
+    text-align: center;
+    padding: 10px 0;
+    background-color: #007bff; /* Blue footer */
+    color: white;
+    position: relative;
+    bottom: 0;
+    width: 100%;
+}

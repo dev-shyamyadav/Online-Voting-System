@@ -1,0 +1,164 @@
+/* General Styles */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+}
+
+.admin-sidebar {
+    width: 250px;
+    background-color: #333; /* Dark background for sidebar */
+    color: #fff;
+    position: fixed;
+    height: 100%;
+    padding: 20px;
+}
+
+.admin-logo {
+    display: flex;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.admin-logo i {
+    font-size: 24px;
+    margin-right: 10px;
+}
+
+.admin-nav a {
+    display: block;
+    color: #fff;
+    text-decoration: none;
+    padding: 10px;
+    margin: 5px 0;
+    border-radius: 5px;
+    transition: background 0.3s;
+}
+
+.admin-nav a:hover,
+.admin-nav a.active {
+    background-color: #575757; /* Darker shade for hover/active */
+}
+.admin-content {
+    margin-left: 290px; /* Space for sidebar */
+    padding: 20px;
+}
+
+.admin-header {
+    margin-bottom: 20px;
+}
+
+.card {
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.msg {
+    color: red; /* For error messages */
+    margin-bottom: 15px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="tel"],
+input[type="password"] {
+    width: 95%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.btn {
+    font-weight: bold;
+    display: inline-block;
+    padding: 10px 25px;
+    margin-top: 10px;
+    border-radius: 5px;
+    text-decoration: none;
+    color: white;
+    background-color: #007bff;
+    border: none;
+    cursor: pointer;
+}
+
+.btn:hover {
+    background-color: #0056b3;
+}
+
+.voter-card {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin: 20px 0;
+}
+
+/* Table Container Styles */
+.table-container {
+    overflow-x: auto;
+}
+
+/* Table Styles */
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+.data-table th, .data-table td {
+    padding: 12px;
+    text-align: center;
+    border-bottom: 1px solid #ddd;
+}
+
+.data-table th {
+    background-color: #333333;
+    color: white;
+}
+
+/* Row Hover Effect */
+.data-table tr:hover {
+    background-color: #f1f1f1;
+}
+
+/* Badge Styles */
+.badge {
+    padding: 5px 10px;
+    border-radius: 12px;
+    font-size: 14px;
+    color: #fff;
+}
+
+.badge.green {
+    background-color: #4CAF50; /* Green */
+}
+
+.badge.gray {
+    background-color: #9E9E9E; /* Gray */
+}
+
+/* Loading and Error Messages */
+.table-container td {
+    text-align: center;
+    color: #777;
+}
+
+/* Responsive Styles */
+@media (max-width: 600px) {
+    .data-table th, .data-table td {
+        padding: 8px;
+        font-size: 14px;
+    }
+}
